@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "clinical-mind-sidekick"
+version = "0.1.0"
+description = "Clinical Mind Sidekick API"
+authors = ["Your Name <your.email@example.com>"]
+packages = [
+    { include = "clinical_mind_sidekick" }  # Must match directory name (with underscores)
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.109.0"
+uvicorn = "^0.27.0"
+openai = "^1.0.0"
+python-dotenv = "^1.0.0"
+pydantic = "^2.0.0"
+pydantic-settings = "^2.0.0"  # Add this line
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0.0"
+httpx = "^0.26.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api" 
