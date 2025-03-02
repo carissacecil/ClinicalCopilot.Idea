@@ -10,8 +10,8 @@ jobs:
     
     # IMPORTANT: TEMPORARY SOLUTION - REPLACE WITH SECRETS ASAP
     env:
-      AWS_ACCESS_KEY_ID: "AKIA4L75CYNXJPDDVNRI"        # REPLACE THIS
-      AWS_SECRET_ACCESS_KEY: "yXK4hIedjAc81y+gb6WNZHfwZ5G/tb0t8qVw3+p3"    # REPLACE THIS
+      AWS_ACCESS_KEY_ID: ""        # REPLACE THIS
+      AWS_SECRET_ACCESS_KEY: ""    # REPLACE THIS
       AWS_REGION: "us-east-2"                          # CHANGE TO YOUR REGION
       ECR_REPOSITORY: "cradle-innovations/clinical-mind-sidekick/backend-api"           # CHANGE TO YOUR REPO NAME
       EC2_HOST: "3.146.206.233"                  # REPLACE THIS
