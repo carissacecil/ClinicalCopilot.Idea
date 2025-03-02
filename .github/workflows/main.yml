@@ -49,4 +49,4 @@ jobs:
           docker rm webapp-container || true
           
           # Run the new container
-          docker run -d --name webapp-container -p 80:8000 ${{ steps.login-ecr.outputs.registry }}/your-repository-name:${{ github.sha }}
+          docker run -d --name webapp-container -p 80:8000 ${{ steps.login-ecr.outputs.registry }}/cradle-innovations/clinical-mind-sidekick/backend-api:${{ github.sha }}
