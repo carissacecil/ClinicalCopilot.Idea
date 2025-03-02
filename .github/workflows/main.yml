@@ -54,7 +54,7 @@ jobs:
         
         aws ssm send-command \
           --document-name "AWS-RunShellScript" \
-          --targets "Key=instanceids,Values=i-1234567890abcdef0" \
+          --targets "Key=instanceids,Values=i-0b0939524b1077226" \
           --parameters "commands=[$DEPLOY_COMMAND]" \
           --region $AWS_REGION
 
