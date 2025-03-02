@@ -1,0 +1,72 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ main ]  # Adjust branch name as needed
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    # IMPORTANT: TEMPORARY SOLUTION - REPLACE WITH SECRETS ASAP
+    env:
+      AWS_ACCESS_KEY_ID: "AKIA4L75CYNXJPDDVNRI"        # REPLACE THIS
+      AWS_SECRET_ACCESS_KEY: "yXK4hIedjAc81y+gb6WNZHfwZ5G/tb0t8qVw3+p3"    # REPLACE THIS
+      AWS_REGION: "us-east-2"                          # CHANGE TO YOUR REGION
+      ECR_REPOSITORY: "cradle-innovations/clinical-mind-sidekick/backend-api"           # CHANGE TO YOUR REPO NAME
+      EC2_HOST: "3.146.206.233"                  # REPLACE THIS
+      EC2_USERNAME: "ec2-user"                         # REPLACE WITH CORRECT USERNAME (ec2-user, ubuntu, etc.)
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+    
+    # TEMPORARY EC2 DEPLOYMENT WITHOUT SSH KEY
+    # This uses AWS SSM Run Command as an alternative to direct SSH
+    # Your EC2 instance needs to have SSM Agent installed and proper IAM role
+    - name: Deploy to EC2 using SSM
+      run: |
+        DEPLOY_COMMAND="aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }} && \
+        docker pull ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }} && \
+        docker stop webapp-container || true && \
+        docker rm webapp-container || true && \
+        docker run -d --name webapp-container -p 80:8000 ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }}"
+        
+        aws ssm send-command \
+          --document-name "AWS-RunShellScript" \
+          --targets "Key=instanceids,Values=i-1234567890abcdef0" \
+          --parameters "commands=[$DEPLOY_COMMAND]" \
+          --region $AWS_REGION
+
+    # Alternative deployment method using SSH without storing the key in GitHub
+    # Uncomment and use this method if your EC2 instance doesn't support SSM
+    # - name: Generate temporary SSH key
+    #   run: |
+    #     echo "${{ env.TEMP_SSH_KEY }}" > /tmp/private_key.pem
+    #     chmod 600 /tmp/private_key.pem
+    #     ssh -o StrictHostKeyChecking=no -i /tmp/private_key.pem ${{ env.EC2_USERNAME }}@${{ env.EC2_HOST }} "aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }} && \
+    #     docker pull ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }} && \
+    #     docker stop webapp-container || true && \
+    #     docker rm webapp-container || true && \
+    #     docker run -d --name webapp-container -p 80:8000 ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }}"
+    #     rm /tmp/private_key.pem
