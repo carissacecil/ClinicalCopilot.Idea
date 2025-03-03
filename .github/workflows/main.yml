@@ -42,7 +42,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           # Pull the latest image
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+          aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
           docker pull ${{ steps.login-ecr.outputs.registry }}/your-repository-name:${{ github.sha }}
           
           # Stop and remove existing container if it exists
