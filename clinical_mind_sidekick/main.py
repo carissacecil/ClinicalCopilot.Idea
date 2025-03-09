@@ -12,7 +12,7 @@ app = FastAPI(
 # Configure CORS
 origins = [
     "http://localhost:4200",  # Angular development server
-    "https://your-production-domain.com",  # Placeholder for production URL
+    "https://main.da1yk2y8qhshn.amplifyapp.com",  # Placeholder for production URL
 ]
 
 app.add_middleware(
