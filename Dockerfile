@@ -1,5 +1,9 @@
 FROM python:3.9-slim
 
+# Accept build argument for OpenAI API key
+ARG OPENAI_API_KEY
+ENV OPENAI_API_KEY=$OPENAI_API_KEY
+
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y curl gcc python3-dev

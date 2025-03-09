@@ -29,8 +29,9 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: cradle-innovations/clinical-mind-sidekick/backend-api  # Change to your ECR repository name
         IMAGE_TAG: ${{ github.sha }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build --build-arg OPENAI_API_KEY=$OPENAI_API_KEY -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
         
@@ -49,5 +50,8 @@ jobs:
           docker stop webapp-container || true
           docker rm webapp-container || true
           
-          # Run the new container
-          docker run -d --name webapp-container -p 80:8000 ${{ steps.login-ecr.outputs.registry }}/cradle-innovations/clinical-mind-sidekick/backend-api:${{ github.sha }}
+          # Run the new container with environment variables
+          docker run -d --name webapp-container \
+            -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+            -p 80:8000 \
+            ${{ steps.login-ecr.outputs.registry }}/cradle-innovations/clinical-mind-sidekick/backend-api:${{ github.sha }}
