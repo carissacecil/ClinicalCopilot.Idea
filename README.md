@@ -11,9 +11,10 @@ Therapists are constantly navigating complex client dynamics, ethical considerat
   - Crisis management and resource navigation  
   - Continuing education tailored to practice needs  
   - Processing countertransference and emotional experiences  
-  - Enhancing cultural competency and communication skills  
-  - Treatment planning and progress notes  
-  - Streamlined insurance claim filing  
+  - Enhancing cultural competency and communication skills
+  - Psychotherapy notes (solely therapist-facing) 
+  
+
 
 ### The Power of a Clinical Co-Pilot  
 Imagine a tool that not only helps with administrative tasks but also elevates clinical practice by asking the right questions at the right time. **Co-Pilot** provides dynamic prompts like:  
